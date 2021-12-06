@@ -7,7 +7,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from rest_framework import generics
+from rest_framework import generics,status
 from rest_framework.viewsets import ReadOnlyModelViewSet,ViewSet,ModelViewSet
 #from rest_framework.mixins import ListModelMixin,CreateModelMixin
 #from rest_framework_simplejwt.tokens import RefreshToken     
@@ -70,12 +70,11 @@ class signup(APIView):
             {'data': sr.data},
             
         )
-#
+
         return Response(
-            {'data': sr.errors},
+            {'data': sr.errors},status=status.HTTP_417_EXPECTATION_FAILED
         )
-#
-#
+
 
 class VerifyEmail(APIView):
     permission_classes=[AllowAny]
@@ -235,5 +234,5 @@ class ChangePasswordView(generics.UpdateAPIView):
 
             return Response(response)
 
-        return Response(serializer.errors)
+        return Response("chk your new password again",status=status.HTTP_406_NOT_ACCEPTABLE)
 
