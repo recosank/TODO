@@ -1,20 +1,15 @@
 from django.contrib.auth import authenticate
-from django.db.models import fields
 from django.urls.base import reverse
 from rest_framework import serializers, settings
-
 from .models import custom_user
 from .utils import Util
 from V1.App2.models import profile
-
 from django.utils.encoding import smart_bytes,smart_str,force_str
 from django.utils.http import urlsafe_base64_decode , urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.exceptions import AuthenticationFailed
 from .google import Google
 from .socialuser import create_social_user
-
-
 
 
 class user_serializer(serializers.ModelSerializer):
@@ -50,7 +45,6 @@ class user_serializer(serializers.ModelSerializer):
 
 
 class login_Serializer(serializers.Serializer):
-
     email = serializers.EmailField(max_length=255, min_length=3)
     password = serializers.CharField(
         max_length=68, min_length=6, write_only=True)
@@ -80,12 +74,6 @@ class login_Serializer(serializers.Serializer):
             'tokens': user.tokens
         }
 
-        return super().validate(attrs)
-
-
-
-
-
 class passwd_rlink_serializer(serializers.Serializer):
     username = serializers.CharField(max_length=132)
 
@@ -107,11 +95,8 @@ class passwd_rlink_serializer(serializers.Serializer):
                 email_body = 'eyy '+username + ' Use the link below to verify your email \n' + absurl
                 data = {'email_body': email_body, 'to_email': user_obj.email,
                     'email_subject': 'Verify your email'}
-#
                 Util.send_email(data)
-
         return super().validate(attrs)
-
 
 class SetNewPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(
@@ -129,17 +114,13 @@ class SetNewPasswordSerializer(serializers.Serializer):
             password = attrs.get('password')
             token = attrs.get('p_token')
             uidb64 = attrs.get('uid')
-
             id = force_str(urlsafe_base64_decode(uidb64))
             usr = custom_user.objects.get(id=id)
-            
             if not PasswordResetTokenGenerator().check_token(usr, token):
                 raise AuthenticationFailed('The reset link is invalid try agian with new link')
 
             usr.set_password(password)
             usr.save()
-
-            
         except Exception as e:
             raise AuthenticationFailed('The reset link iss invalid')
         return super().validate(attrs)
@@ -147,10 +128,24 @@ class SetNewPasswordSerializer(serializers.Serializer):
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True,write_only=True)
     new_password = serializers.CharField(required=True,write_only=True)
+    confirm_password = serializers.CharField(required=True,write_only=True)
+    
     class Meta:
         model = custom_user
-        fields = ("old_password","new_password") 
-
+        fields = ("old_password","new_password","confirm_password") 
+    
+    def validate(self, attrs):
+        usr = self.context['request'].user
+        psswd = attrs.get("old_password")
+        if not usr.check_password(psswd):
+            raise serializers.ValidationError("chk old psswed")
+            
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError("chk new psswed")
+        
+        usr.set_password(attrs.get("new_password"))
+        usr.save()
+        return super().validate(attrs)
 
 class google_serializer(serializers.Serializer):
     g_token = serializers.CharField(max_length=465)
@@ -172,6 +167,5 @@ class google_serializer(serializers.Serializer):
         email = user_data['email']
         name = user_data['name']
         provider = 'google'
-
         return create_social_user(p=provider,u=name,u_id=user_id,e=email)
         

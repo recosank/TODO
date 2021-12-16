@@ -1,11 +1,9 @@
-#from .views import get_tokens_for_user
 import random
 from django.contrib.auth import authenticate
 from .models import custom_user
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import settings
 from .token import get_tokens_for_user
-
 
 def create_username(name):
     us = "".join(name.split(" ").lower())
@@ -34,5 +32,6 @@ def create_social_user(p,u_id,u,e):
     return {
                 'username': a_user.username,
                 'email': a_user.email,
-                'tokens': u_token}
+                'tokens': u_token
+    }
 

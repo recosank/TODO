@@ -6,7 +6,6 @@ class td(models.Model):
     user = models.ForeignKey(profile,on_delete=models.CASCADE,related_name="todo")
     task = models.TextField()
     date_created = models.DateTimeField(default=timezone.now)
-    
     is_pending = models.BooleanField(default=False)
 
     class Meta:

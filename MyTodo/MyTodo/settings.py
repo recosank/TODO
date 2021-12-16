@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'V1.App2',
     'V2.App3',      
     'rest_framework',
-   
     'rest_framework_simplejwt',
 ]
 
@@ -91,7 +90,7 @@ REST_FRAMEWORK = {
     #'VERSION_PARAM': 'version',
 }
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME':timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME':timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME':timedelta(days=1),
     'ROTATE_REFRESH_TOKENS':False,
     'ALGORITHM':'HS256',
