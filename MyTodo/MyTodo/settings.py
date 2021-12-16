@@ -1,9 +1,10 @@
 from pathlib import Path
 from datetime import timedelta
+from decouple import config 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-l!&=((8-$rh9!fjk1@_y(ud!w)g@cj^##@mt20trute#gv@&a+'
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -141,8 +142,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'jaspallodu2'
-EMAIL_HOST_PASSWORD = 'equyqeaokhpospsn'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 STATIC_URL = 'V2/App2/static/'
 GOOGLE_CLIENT_ID = "171147226131-95419dq6m9ld16hebtafmlj91ubu08vm.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
